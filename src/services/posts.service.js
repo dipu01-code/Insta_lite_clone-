@@ -23,8 +23,11 @@ async function createPost(data) {
   });
 }
 
-async function listPosts() {
-  return prisma.post.findMany({ select: POST_SELECT });
+async function listPosts({ where, skip, take, orderBy }) {
+  return prisma.$transaction([
+    prisma.post.findMany({ where, skip, take, orderBy, select: POST_SELECT }),
+    prisma.post.count({ where }),
+  ]);
 }
 
 async function getPostById(id) {

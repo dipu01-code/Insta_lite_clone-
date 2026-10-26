@@ -15,8 +15,11 @@ async function createUser(data) {
   return prisma.user.create({ data, select: USER_SELECT });
 }
 
-async function listUsers() {
-  return prisma.user.findMany({ select: USER_SELECT });
+async function listUsers({ where, skip, take, orderBy }) {
+  return prisma.$transaction([
+    prisma.user.findMany({ where, skip, take, orderBy, select: USER_SELECT }),
+    prisma.user.count({ where }),
+  ]);
 }
 
 async function getUserById(id) {
